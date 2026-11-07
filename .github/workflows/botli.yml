@@ -72,37 +72,7 @@ jobs:
       # =========================
       # STOCKFISH 18 (OFFICIAL)
       # =========================
-      - name: Install Stockfish 18
-        run: |
-          echo "Installing Stockfish 18"
-          mkdir -p engines
-          curl -L -o sf18.tar https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-ubuntu-x86-64-avx2.tar
-          tar -xf sf18.tar
-          mv stockfish/stockfish-ubuntu-x86-64-avx2 engines/sf
-          chmod +x engines/sf
-          ./engines/sf --version
-
-      # =========================
-      # FAIRY-STOCKFISH
-      # =========================
-      - name: Install Fairy-Stockfish
-        run: |
-          echo "Installing Fairy-Stockfish"
-          mkdir -p engines
-          RUN_ID=$(curl -s -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token $GH_TOKEN" \
-            https://api.github.com/repos/fairy-stockfish/Fairy-Stockfish/actions/workflows/release.yml/runs?per_page=1\&branch=master\&status=success \
-            | jq -r '.workflow_runs[0].id')
-
-          ARTIFACT_URL=$(curl -s -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token $GH_TOKEN" \
-            https://api.github.com/repos/fairy-stockfish/Fairy-Stockfish/actions/runs/$RUN_ID/artifacts \
-            | jq -r '.artifacts[] | select(.name | contains("linux-x86-64-modern")) | .archive_download_url')
-
-          curl -L -H "Authorization: token $GH_TOKEN" -o fsf.zip "$ARTIFACT_URL"
-          unzip -o fsf.zip -d engines
-          mv engines/fairy-stockfish_x86-64-modern engines/fsf
-          chmod +x engines/fsf
+     
 
       - name: Inject Secret Token
         run: sed -i "s/TokenTimeIsBackBuddyss/${{ secrets.LICHESS_KEY }}/g" config.yml
@@ -111,6 +81,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install gh -y
+
+      - name: Noksiy permission
+        run: chmod +x ./engines/noksiy
 
       - name: Cancel previous runs
         run: |
